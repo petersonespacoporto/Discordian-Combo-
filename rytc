@@ -1,0 +1,80 @@
+#!/usr/bin/ruby
+
+# rytc v0.0.2
+# Download and convert videos from YouTube URLs
+#
+# Copyright (C) 2009 by Tiago Madeira <contact@tiagomadeira.com>
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+require "net/http"
+
+arg = ARGV
+
+def inputerror
+	puts "rytc v0.0.2"
+	puts "Ruby YouTube Converter"
+	puts ""
+	puts "Use: rytc <flv|avi|mp3> VIDEO_1 [VIDEO_2 ...]"
+	puts ""
+end
+
+def check(arg)
+	which = `which #{arg}`
+	if which == ""
+		puts "You must install the package '#{arg}' to convert YouTube videos to this format."
+		exit 1
+	end
+end
+
+if arg.length < 2
+	inputerror
+	puts "You must pass at least two arguments."
+	exit 1
+end
+
+tipo = arg.shift.downcase
+if tipo != 'flv' && tipo != 'avi' && tipo != 'mp3'
+	inputerror
+	puts "You have choose a invalid format (the second argument must be flv, avi or mp3)"
+	exit 1
+else
+	if tipo == 'avi'
+		check 'ffmpeg'
+	elsif tipo == 'mp3'
+		check 'ffmpeg'
+		check 'lame'
+	end
+end
+
+ARGV.each do |v|
+	if v.match(/[?&]v=/)
+		id = v.gsub(/^.*[?&]v=([^&]*).*$/, '\1')
+	else
+		id = v
+	end
+	host = Net::HTTP.new("www.youtube.com",80)
+	resposta = host.get("/watch?v="+id)
+	vars = resposta.body.scan(/video_id=.*&t=[^\"&]*/).uniq.to_s
+	url = "http://www.youtube.com/get_video?#{vars}"
+	nome = resposta.body.scan(/<title>.*<\/title>/).uniq.to_s.gsub(/<\/?title>/, '').gsub(/YouTube - /, '').gsub(/'/, '\\\'')
+	`wget -c -O '#{nome}.flv' '#{url}'`
+	if tipo == "mp3"
+		`ffmpeg -i '#{nome}.flv' -ar 44100 '#{nome}.wav' && rm '#{nome.flv}' && lame '#{nome}.wav' '#{nome}.mp3' && rm '#{nome}.wav'`
+	elsif tipo == "avi"
+		`ffmpeg -i '#{nome}.flv' '#{nome}.avi' && rm '#{nome}.flv'`
+	end
+end
+

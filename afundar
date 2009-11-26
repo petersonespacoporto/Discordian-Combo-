@@ -1,0 +1,27 @@
+#!/bin/sh
+#
+# Afundar -- jogue um antigo jogo discordiano com arquivos
+# Criado por lhos em 32 de Consequências de 3160
+# Modificado por Tiago Madeira e Peterson Espaçoporto em 39 de Caos de 3175
+#
+# Todos os direitos revertidos
+
+if [ $# -eq 0 ]; then
+  echo "usage:  $0 file(s)"
+  exit 1
+fi
+
+while [ $# -gt 0 ]; do
+	cinco=$((RANDOM%100))
+	if [ $cinco -lt 23 ]; then
+		rm $1
+		if [ $? -eq 0 ]; then
+			echo "Aee! Eu afundei $1!"
+		else
+			echo "Éris não quer que você afunde $1"
+		fi
+	else
+		echo "$1 não afundou... =("
+	fi
+	shift
+done
