@@ -1,28 +1,19 @@
 #!/usr/bin/ruby
-
 # Teste de fidelidade discordiano 0.2.3 (sem loop mortal)
 # por rev. Beraldo
 
-puts 'Amigo, olá. Pode me dizer qual teu nome?'
-nome = gets.chomp.capitalize
+puts "Amigo, olá. Pode me dizer qual teu nome?"
+nome = gets.chomp.split(" ").map {|i| i.capitalize}.join(" ")
 
-# O cara coloca o nome aqui. Se a resposta for negativa, o programa acaba.
-while ( nome == 'Não' )
-	puts 'Então vá se f***r!'
-	exit
-end
-
-# Se o nome for dado, não entra em loop e faz:
-if ( nome != 'Não' )
-	puts 'Seja bem-vindo a este Fascinante Teste de Fidelidade Discordiano, ' + nome + '.'
-	puts ' '
-end
-
-# Aqui é o teste-em-si.
-puts 'Me diga, então: qual teu número preferido?'
-numero = gets.chomp.to_i
-if ( numero == 23 or numero == 5)
-	puts 'Por Éris!, você é um discordiano de fato!'
-else
-	puts 'Não... Esqueça que viu este programa.'
+if (nome == "Não" or nome == "Nao" )
+	puts "Então vá se f***r!"
+else 
+	puts "Seja bem-vindo a este Fascinante Teste de Fidelidade Discordiano, #{nome}.\n"
+	puts "Me diga, então: qual teu número preferido?"
+	numero = gets.chomp.to_i
+	if (numero == 23 or numero == 5)
+		puts "Por Éris!, você é um discordiano de fato!"
+	else
+		puts "Não... Esqueça que viu este programa."
+	end
 end
